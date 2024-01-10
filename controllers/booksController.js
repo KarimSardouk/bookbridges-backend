@@ -1,14 +1,49 @@
 const Book = require("../models/book");
 const { imageUploader } = require("../extra/imageUploader");
-const  db = require("../config/db");
+const db = require("../config/db");
+
 const getAllBooks = async (req, res) => {
   try {
     const books = await Book.find();
-    res.json(books);
+    books.sort((a, b) => {
+ if (a.book_title < b.book_title) {
+    return -1;
+ }
+ if (a.book_title > b.book_title) {
+    return 1;
+ }
+ return 0;
+});
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const results = {};
+
+    if (endIndex < books.length) {
+      results.next = {
+        page: page + 1,
+        limit: limit
+      };
+    }
+
+    if (startIndex > 0) {
+      results.previous = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+
+    results.results = books.slice(startIndex, endIndex);
+    res.json(results);
+
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const getBookByID = async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
@@ -72,7 +107,7 @@ const addBook = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: 'Image file is required',
+        message: "Image file is required",
       });
     }
 
@@ -81,7 +116,7 @@ const addBook = async (req, res) => {
     if (!imageURL) {
       return res.status(400).json({
         success: false,
-        message: 'Error uploading image',
+        message: "Error uploading image",
       });
     }
 
@@ -94,14 +129,14 @@ const addBook = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Book added successfully',
+      message: "Book added successfully",
       data: newBook,
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
       success: false,
-      message: 'Internal Server Error',
+      message: "Internal Server Error",
       error: error.message,
     });
   }

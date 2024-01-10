@@ -11,7 +11,6 @@ router.post("/addQuote", quotesController.addQuoteToDatabase); // Updated route
 router.put("/updateQuote/:id", isAuthenticated, quotesController.updateQuote);
 router.delete(
   "/deleteQuote/:id",
-  isAuthenticated,
   quotesController.deleteQuote
 );
 
