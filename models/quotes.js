@@ -10,8 +10,10 @@ const quoteSchema = new mongoose.Schema({
   },
   emotion_name: {
     type: String,
-    required: true,
   },
+  theme_name:{
+    type: String,
+  }
 });
 const Quote = mongoose.model("Quote", quoteSchema);
 module.exports = Quote;

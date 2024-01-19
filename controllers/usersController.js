@@ -35,7 +35,7 @@ const getUserByID = async (req, res) => {
 
 const addUser = async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, password, userRole } = req.body;
     // Hash the password using bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -44,6 +44,7 @@ const addUser = async (req, res) => {
       fullName,
       email,
       hashedPassword,
+      userRole,
     });
     // Save the user document to the MongoDB database
     await newUser.save();
@@ -164,7 +165,8 @@ const loginUser = async (req, res) => {
         message: "Wrong password.",
       });
     }
-    const token = generateToken(user);
+    console.log(user);
+    const token = generateToken(user?._id,user?.userRole);
     return res.status(200).json({
       success: true,
       message: `User with email ${email} logged in succesfully.`,
