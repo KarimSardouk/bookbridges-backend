@@ -2,6 +2,100 @@ const Book = require("../models/book");
 const Shelf = require("../models/shelf");
 const { imageUploader } = require("../extra/imageUploader");
 const db = require("../config/db");
+const { parseISO, format } = require('date-fns');
+
+const formatDate = (dateString, bookId) => {
+  try {
+    const parsedDate = new Date(dateString);
+    if (isNaN(parsedDate)) {
+      console.error(`Invalid date for book ${bookId}: ${dateString}`);
+      return null;
+    }
+    return format(parsedDate, 'yyyy-MM-dd');
+  } catch (error) {
+    console.error(`Error parsing date for book ${bookId}: ${dateString}`, error);
+    return null;
+  }
+};
+// const updateAllBooks = async () => {
+//   try {
+//     const allBooks = await Book.find();
+
+//     // Update each book to format the publication_date
+//     for (const book of allBooks) {
+//       const formattedDate = formatDate(book.publication_date, book._id);
+//       if (formattedDate !== null) {
+//         // Update the book's publication_date
+//         await Book.findByIdAndUpdate(book._id, { publication_date: formattedDate });
+//       }
+//     }
+
+//     console.log('All books updated successfully.');
+
+//   } catch (error) {
+//     console.error('Error updating books:', error);
+//   }
+// };
+
+// Call the function to update all books
+// updateAllBooks();
+
+const getAllBooks = async (req, res) => {
+  try {
+    const books = await Book.find();
+    books.sort((a, b) => a.book_title.localeCompare(b.book_title));
+
+    // Format the publication_date for each book
+    const formattedBooks = books.map(book => ({
+      ...book.toObject(),
+      publication_date: formatDate(book.publication_date),
+    })).filter(book => book.publication_date !== null); // Filter out books with invalid dates
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const results = {};
+
+    if (endIndex < formattedBooks.length) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+
+    if (startIndex > 0) {
+      results.previous = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+
+    results.results = formattedBooks.slice(startIndex, endIndex);
+    res.json(results);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getAll = async (req, res) => {
+  try {
+    const books = await Book.find();
+
+    // Format the publication_date for each book
+    const formattedBooks = books.map(book => ({
+      ...book.toObject(),
+      publication_date: formatDate(book.publication_date),
+    })).filter(book => book.publication_date !== null); // Filter out books with invalid dates
+
+    res.json(formattedBooks);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 const getAllShelvesByShelfName = async (req, res) => {
   try {
     const shelves = await Shelf.find().distinct("shelf_name");
@@ -83,55 +177,52 @@ const addToBookShelf = async (req, res) => {
     });
   }
 };
-const getAllBooks = async (req, res) => {
-  try {
-    const books = await Book.find();
-    books.sort((a, b) => {
-      if (a.book_title < b.book_title) {
-        return -1;
-      }
-      if (a.book_title > b.book_title) {
-        return 1;
-      }
-      return 0;
-    });
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 3;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    const results = {};
-    if (endIndex < books.length) {
-      results.next = {
-        page: page + 1,
-        limit: limit,
-      };
-    }
-    if (startIndex > 0) {
-      results.previous = {
-        page: page - 1,
-        limit: limit,
-      };
-    }
-    results.results = books.slice(startIndex, endIndex);
-    res.json(results);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-const getAll = async (req, res) => {
-  try {
-    const books = await Book.find();
-    res.json(books);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-const formatDate = (dateString) => {
-  const options = { year: "numeric", month: "long", day: "numeric" };
-  return new Date(dateString).toLocaleDateString(undefined, options);
-};
+// const getAllBooks = async (req, res) => {
+//   try {
+//     const books = await Book.find();
+//     books.sort((a, b) => {
+//       if (a.book_title < b.book_title) {
+//         return -1;
+//       }
+//       if (a.book_title > b.book_title) {
+//         return 1;
+//       }
+//       return 0;
+//     });
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 3;
+//     const startIndex = (page - 1) * limit;
+//     const endIndex = page * limit;
+//     const results = {};
+//     if (endIndex < books.length) {
+//       results.next = {
+//         page: page + 1,
+//         limit: limit,
+//       };
+//     }
+//     if (startIndex > 0) {
+//       results.previous = {
+//         page: page - 1,
+//         limit: limit,
+//       };
+//     }
+//     results.results = books.slice(startIndex, endIndex);
+//     res.json(results);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+// const getAll = async (req, res) => {
+//   try {
+//     const books = await Book.find();
+//     res.json(books);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
 
 const getBooksAdmin = async (req, res) => {
   try {
@@ -258,31 +349,55 @@ const addBook = async (req, res) => {
     });
   }
 };
+
 const updateBook = async (req, res) => {
-  const bookId = req.params.id;
+  const { id } = req.params;
+  console.log('Received id:', id);
+  const {
+    book_title,
+    author_name,
+    genre_name,
+    publisher_name,
+    publication_date,
+    description,
+    rating,
+    book_image,
+  } = req.body;
+
   try {
-    const updatedBook = await Book.findOneAndUpdate(
-      { _id: bookId },
+    const updatedBook = await Book.findByIdAndUpdate(
+      id,
       {
-        $set: {
-          book_title: req.body.book_title,
-          author_name: req.body.author_name,
-          genre_name: req.body.genre_name,
-          publisher_name: req.body.publisher_name,
-          publication_date: req.body.publication_date,
-          description: req.body.description,
-        },
+        book_title,
+        author_name,
+        genre_name,
+        publisher_name,
+        publication_date,
+        description,
+        rating,
+        book_image,
       },
-      { new: true }
+      { new: true } // Return the updated document
     );
-    // Check if the user was found and updated
+
     if (!updatedBook) {
-      return res.status(404).json({ msg: "Book not found" });
+      return res.status(404).json({
+        success: false,
+        message: `Book with id = ${id} not found.`,
+      });
     }
-    res.json(updatedBook);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
+
+    return res.status(200).json({
+      success: true,
+      message: `Book updated successfully.`,
+      data: updatedBook,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: `Error while trying to update book with id ${id}.`,
+      error: error.message,
+    });
   }
 };
 const deleteBook = async (req, res) => {
@@ -320,4 +435,5 @@ module.exports = {
   getAllBooksFromShelf,
   getAllShelvesByShelfName,
   getAll,
+  // updateAllBooks,
 };

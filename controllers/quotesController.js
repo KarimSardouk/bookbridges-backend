@@ -175,18 +175,33 @@ const getQuoteByEmotion = async (req, res) => {
 //     res.status(500).json({ error: 'Internal Server Error' });
 //   }
 // };
-const addQuoteToDatabase = async (req, res) => {
+// const addQuote = async (req, res) => {
+//   try {
+//     const { quote_text, author_of_quote } = req.body;
+//     const newQuote = new Quote({
+//       quote_text,
+//       author_of_quote,
+//     });
+//     await newQuote.save(); // Save to the local database
+//     res.json(newQuote);
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+const addQuote = async (req, res) => {
   try {
-    const { quote_text, author_of_quote, emotion_name } = req.body;
+    const { quote_text, author_of_quote } = req.body;
+
     const newQuote = new Quote({
       quote_text,
       author_of_quote,
-      emotion_name,
     });
+
     await newQuote.save(); // Save to the local database
-    res.json(newQuote);
+    res.status(200).json({ success: true, message: "Quote added successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error adding quote:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 const updateQuote = async (req, res) => {
@@ -198,7 +213,6 @@ const updateQuote = async (req, res) => {
         $set: {
           quote_text: req.body.quote_text,
           author_of_quote: req.body.author_of_quote,
-          emotion_name: req.body.emotion_name,
         },
       },
       { new: true }
@@ -238,7 +252,7 @@ module.exports = {
   getAllQuotes,
   getQuoteByEmotion,
   getQuoteByID,
-  addQuoteToDatabase,
+  addQuote,
   deleteQuote,
   updateQuote,
   getQuotes,

@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 exports.isAuthenticated = (req, res, next) => {
+  console.log('Middleware: isAuthenticated');
   const authorizationHeader = req.headers.authorization;
 
   if (!authorizationHeader || !authorizationHeader.startsWith('Bearer')) {
@@ -18,6 +19,7 @@ exports.isAuthenticated = (req, res, next) => {
   try {
     const credentials = jwt.verify(token, process.env.JWT_SECRET);
     res.locals = credentials;
+    console.log(credentials);
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Not authorized, invalid token' });

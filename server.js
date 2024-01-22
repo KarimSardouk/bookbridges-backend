@@ -8,6 +8,8 @@ const bookRoutes = require("./routes/bookRoutes");
 const emotionsRoutes = require("./routes/emotionsRoutes");
 const genreRoutes = require("./routes/genreRoutes");
 const quotesRoutes = require("./routes/quotesRoutes");
+const emailRoutes = require("./routes/emailRoutes");
+
 // const ratingsRoutes = require("./routes/ratingsRoutes");
 
 const app = express();
@@ -24,6 +26,7 @@ app.use("/books", bookRoutes);
 app.use("/emotions", emotionsRoutes);
 app.use("/genre", genreRoutes);
 app.use("/quotes", quotesRoutes);
+app.use("/email", emailRoutes);
 // app.use("/ratings", ratingsRoutes);
 
 app.listen(port, () => {

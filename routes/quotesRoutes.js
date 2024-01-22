@@ -7,10 +7,11 @@ router.get("/", quotesController.getAllQuotes);
 router.get("/getAll", quotesController.getQuotes);
 router.get("/getByID/:id", quotesController.getQuoteByID);
 router.get("/quotes", quotesController.getQuoteByEmotion);
-router.post("/addQuote", quotesController.addQuoteToDatabase); // Updated route
+router.post("/addQuote", isAuthenticated, quotesController.addQuote); // Updated route
 router.put("/updateQuote/:id", isAuthenticated, quotesController.updateQuote);
 router.delete(
   "/deleteQuote/:id",
+  isAuthenticated,
   quotesController.deleteQuote
 );
 

@@ -15,13 +15,20 @@ router.get(
   "/getAllShelvesByShelfName",
   booksController.getAllShelvesByShelfName
 );
-router.post("/addBook", upload.single("image"), booksController.addBook);
+router.post(
+  "/addBook",
+  isAuthenticated,
+  upload.single("image"),
+  booksController.addBook
+);
 router.post(
   "/addToBookShelf",
+  isAuthenticated,
   upload.single("image"),
   booksController.addToBookShelf
 );
 router.put("/updateBook/:id", isAuthenticated, booksController.updateBook);
-router.delete("/deleteBook/:id", booksController.deleteBook);
+// router.put("/updateAllBooks", booksController.updateAllBooks);
+router.delete("/deleteBook/:id", isAuthenticated, booksController.deleteBook);
 // const Book = require("../models/book"); // Import the Book model
 module.exports = router;

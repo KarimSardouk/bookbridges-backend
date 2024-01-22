@@ -20,7 +20,6 @@ const bookSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
   },
   rating: {
     type: Number,
