@@ -10,8 +10,6 @@ const genreRoutes = require("./routes/genreRoutes");
 const quotesRoutes = require("./routes/quotesRoutes");
 const emailRoutes = require("./routes/emailRoutes");
 
-// const ratingsRoutes = require("./routes/ratingsRoutes");
-
 const app = express();
 const port = process.env.PORT;
 const API_URL = process.env.API_URL;
@@ -27,7 +25,6 @@ app.use("/emotions", emotionsRoutes);
 app.use("/genre", genreRoutes);
 app.use("/quotes", quotesRoutes);
 app.use("/email", emailRoutes);
-// app.use("/ratings", ratingsRoutes);
 
 app.listen(port, () => {
   dbConnection()
