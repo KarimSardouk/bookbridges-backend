@@ -177,6 +177,37 @@ const addToBookShelf = async (req, res) => {
     });
   }
 };
+const deleteFromBookShelf = async (req, res) => {
+  try {
+    const bookId = req.params.id; // Assuming the book ID is passed as a URL parameter
+
+    // Check if the book with the given ID exists
+    const existingBook = await Shelf.findById(bookId);
+    if (!existingBook) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+      });
+    }
+
+    // Delete the book from the Shelf collection
+    await Shelf.findByIdAndDelete(bookId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Book deleted from the shelf!",
+      data: existingBook,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
 // const getAllBooks = async (req, res) => {
 //   try {
 //     const books = await Book.find();
@@ -434,6 +465,7 @@ module.exports = {
   updateBook,
   addBook,
   addToBookShelf,
+  deleteFromBookShelf,
   getAllBooksFromShelf,
   getAllShelvesByShelfName,
   getAll,

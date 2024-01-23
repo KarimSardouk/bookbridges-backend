@@ -35,5 +35,7 @@ router.put(
 );
 // router.put("/updateAllBooks", booksController.updateAllBooks);
 router.delete("/deleteBook/:id", isAuthenticated, booksController.deleteBook);
+router.delete("/deleteFromBookShelf/:id", booksController.deleteFromBookShelf);
+
 // const Book = require("../models/book"); // Import the Book model
 module.exports = router;
