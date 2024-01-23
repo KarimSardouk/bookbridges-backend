@@ -27,7 +27,12 @@ router.post(
   upload.single("image"),
   booksController.addToBookShelf
 );
-router.put("/updateBook/:id", isAuthenticated, booksController.updateBook);
+router.put(
+  "/updateBook/:id",
+  isAuthenticated,
+  upload.single("image"),
+  booksController.updateBook
+);
 // router.put("/updateAllBooks", booksController.updateAllBooks);
 router.delete("/deleteBook/:id", isAuthenticated, booksController.deleteBook);
 // const Book = require("../models/book"); // Import the Book model

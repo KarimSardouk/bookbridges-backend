@@ -361,10 +361,12 @@ const updateBook = async (req, res) => {
     publication_date,
     description,
     rating,
-    book_image,
   } = req.body;
 
   try {
+    console.log(req.body);  // Check if image data is being received
+    console.log(req.file);
+    const imageURL = await imageUploader(req);
     const updatedBook = await Book.findByIdAndUpdate(
       id,
       {
@@ -375,7 +377,7 @@ const updateBook = async (req, res) => {
         publication_date,
         description,
         rating,
-        book_image,
+        book_image: imageURL,
       },
       { new: true } // Return the updated document
     );

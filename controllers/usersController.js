@@ -104,13 +104,8 @@ const updateUser = async (req, res) => {
       { _id: userId },
       {
         $set: {
-          name: req.body.name,
-          lastName: req.body.lastName,
+         fullName: req.body.name,
           email: req.body.email,
-          password: req.body.password,
-          phoneNumber: req.body.phoneNumber,
-          address: req.body.address,
-          role: req.body.role,
         },
       },
       { new: true }

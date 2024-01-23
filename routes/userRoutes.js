@@ -12,6 +12,6 @@ router.put(
   isAuthenticated,
   usersController.switchToAdmin
 );
-router.delete("/deleteUser/:id", usersController.deleteUser);
+router.delete("/deleteUser/:id", isAuthenticated, usersController.deleteUser);
 const User = require("../models/user"); // Import the Blog model
 module.exports = router;
