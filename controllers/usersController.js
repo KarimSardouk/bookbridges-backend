@@ -104,7 +104,7 @@ const updateUser = async (req, res) => {
       { _id: userId },
       {
         $set: {
-         fullName: req.body.name,
+         fullName: req.body.fullName,
           email: req.body.email,
         },
       },
